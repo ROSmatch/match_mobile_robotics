@@ -29,7 +29,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        cd match_mobile_robotics
+        mkdir -p src
         rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y
 
     - name: Build the workspace
