@@ -12,7 +12,7 @@
 	<arg name="global_planner_config" doc="Path to the global config file." />
 	<arg name="local_planner" doc="Name of the local planner that should be used by the navigation stack"/>
 	<arg name="local_planner_config" doc="Path to the local config file." />
-	<arg name="localization_type" default="ground_truth" />
+	<arg name="localization_type" default="ground_truth" doc="i.e. amcl, ground_truth"/>
 	<arg name="localization_mode" default="0" />
 
 	<!-- load the joint state controller config (list of passive joints) -->

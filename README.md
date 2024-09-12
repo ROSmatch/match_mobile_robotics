@@ -28,7 +28,22 @@ Start by changeing directory to your catkin workspace!
 ```
 git clone https://github.com/ROSmatch/match_mobile_robotics.git
 ```
-### Install dependencies
+
+If you want to use the latest changes clone noetic-devel instead:
+```
+git clone --branch noetic-devel https://github.com/ROSmatch/match_mobile_robotics.git
+# or if already cloned: git checkout noetic-devel
+```
+
+### Build and Install
+Browse into `your_catkin_ws_name/src/Match_Mobile_Robotics` and execute
+```
+./setup_full.sh
+```
+\
+\
+**Alternatively** run the setup step-by-step:
+#### Install dependencies
 Browse into `your_catkin_ws_name/src/Match_Mobile_Robotics` and execute
 ```
 git submodule update --init --recursive
@@ -41,7 +56,7 @@ If the last `rosdep install` command is not working, please try the following:
 rosdep install --from-paths src --ignore-src -r -y
 ```
 
-### Build packages
+#### Build packages
 Use your standard build tools to build the downloaded packages e.g. : 
 ```
 catkin build
@@ -67,4 +82,12 @@ Arises at Build. Solved by installing other version of setup_tools:
 
 ```bash
   pip install setuptools==59.5.0
+```
+
+### NLOPT
+If nlopt has not been build, rebuild it by running the following in your catkin_ws:
+```bash
+  catkin clean
+  cd src/match_mobile_robotics
+  ./setup_full.sh
 ```

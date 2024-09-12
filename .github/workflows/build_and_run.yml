@@ -1,0 +1,84 @@
+name: Build and Launch Robot in Gazebo
+
+on:
+  push:
+    branches: [noetic-devel]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        rosdistro: [noetic]
+    runs-on: self-hosted
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Install apt dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential clang-format-10 file git python3-catkin-lint \
+            python3-catkin-tools python3-pip python3-rosdep
+
+      - name: Install pip dependencies
+        run: pip install pre-commit
+
+      - name: Set up Catkin workspace
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/catkin_ws/src
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          path: catkin_ws/src/match_mobile_robotics
+
+      - name: Install remaining dependencies
+        run: |
+          cd $GITHUB_WORKSPACE/catkin_ws/src/match_mobile_robotics
+          bash setup_github.sh
+          cd $GITHUB_WORKSPACE/catkin_ws
+          if [ ! -f /etc/ros/rosdep/sources.list.d/20-default.list ]; then
+            sudo rosdep init
+          fi
+          rosdep update
+          rosdep install --from-paths src -i -y --rosdistro ${{ matrix.rosdistro }}
+
+      - name: Build workspace
+        run: |
+          source /opt/ros/${{ matrix.rosdistro }}/setup.sh
+          cd $GITHUB_WORKSPACE/catkin_ws
+          catkin build --limit-status-rate 0.1 --no-notify
+
+      - name: Launch Gazebo with Robot using absolute path
+        run: |
+          source /opt/ros/${{ matrix.rosdistro }}/setup.sh  # Ensure base ROS is sourced
+          cd $GITHUB_WORKSPACE/catkin_ws
+          ls
+          source devel/setup.bash
+          export QT_QPA_PLATFORM=offscreen
+          #roslaunch mir_examples single_mir_600.launch &
+          roslaunch match_gazebo big_square.launch &
+          roslaunch mur_launch_sim mur_620.launch &
+          sleep 15  # Give some time for Gazebo and ROS nodes to initialize
+
+      - name: Check for /pose topic data
+        run: |
+          source /opt/ros/${{ matrix.rosdistro }}/setup.sh
+          source $GITHUB_WORKSPACE/catkin_ws/devel/setup.bash
+          #timeout 10 rostopic echo /mir_pose_simple -n 1
+          timeout 10 rostopic list
+        continue-on-error: true
+
+      - name: Evaluate test result
+        run: |
+          source /opt/ros/${{ matrix.rosdistro }}/setup.sh
+          if timeout 10 rostopic echo /mur620/UR10_l/global_tcp_pose -n 1; then
+            echo "Data received on pose topic, marking test as successful."
+            exit 0
+          else
+            echo "No data received on pose topic, failing the test."
+            exit 1
+          fi 

@@ -18,7 +18,7 @@
         <param name="prefix" value="$(arg prefix)"/>
 	
 	
-		<include file="$(find mir_launch_sim)/launch/utils/general_mir.launch">
+		<include file="$(find mir_launch_sim)/launch/utils/general_mir.launch" pass_all_args="true">
 			<arg name="tf_prefix" value="$(arg tf_prefix)"/>
 			<arg name="robot_x"  value="$(arg robot_x)"/>
 			<arg name="robot_y"  value="$(arg robot_y)"/>

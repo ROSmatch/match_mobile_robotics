@@ -9,8 +9,16 @@
     <arg name="tf_prefix" default="mur620c"/>
     <arg name="left_arm_group_name" default="UR10_l"/>
     <arg name="right_arm_group_name" default="UR10_r"/>
-    <arg name="external_localization" default="false"/>
-    <arg name="localization_type" default="robot_pose" />
+    <arg name="external_localization" default="true"/>
+    <arg name="localization_type" default="mocap" />
+
+    <!-- ur base calibration -->
+    <arg name="ur_l_xyz" default="-0.008759885687255942 -0.0009479599747381218 0.0"/>
+    <arg name="ur_l_rpy" default="0.0 0.0 -0.2362788186536009"/>
+    <arg name="ur_r_xyz" default="-0.006734587278734772 0.003396998921764205 0.0"/>
+    <arg name="ur_r_rpy" default="0.0 0.0 2.937183707767506"/>
+
+
    
     <include file="$(find mur_launch_hardware)/launch/general_mur600.launch">
         <arg name="launch_mir" value="$(arg launch_mir)"/>

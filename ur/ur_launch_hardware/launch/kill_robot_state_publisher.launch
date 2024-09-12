@@ -1,0 +1,7 @@
+<launch>
+    <!-- the robot_state_publisher is killed by rosnode to prevent the robot_state_publisher from running twice -->
+    <arg name="node_prefix" default="mur620c/UR10_r" />
+
+    <node name="rosnode_killer" pkg="rosnode_killer" type="rosnode_killer" args="kill /$(arg node_prefix)/robot_state_publisher" launch-prefix="bash -c 'sleep 1.0; $0 $@' "/>
+</launch>
+

@@ -45,5 +45,5 @@
 	branch = main
 [submodule "submodules/gazebo_ros_link_attacher"]
 	path = submodules/gazebo_ros_link_attacher
-	url = https://github.com/pal-robotics/gazebo_ros_link_attacher.git
+	url = https://github.com/pal-robotics/gazebo_ros_link_attacher
 	branch = melodic-devel

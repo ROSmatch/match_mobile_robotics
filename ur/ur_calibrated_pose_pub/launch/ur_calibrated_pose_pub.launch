@@ -8,7 +8,7 @@
     <arg name="joint_prefix" default="UR10_l"/>
     
     <!-- Interface for gripper abstraction -->
-    <node name="ur_calibrated_pose_pub_node" type="ur_calibrated_pose_pub_node" pkg="ur_calibrated_pose_pub" output="screen"> 
+    <node name="ur_calibrated_pose_pub_node" type="ur_calibrated_pose_pub_node" pkg="ur_calibrated_pose_pub" output="screen" respawn="true"> 
         <rosparam file="$(find ur_calibrated_pose_pub)/config/ur10e_dh_params.yaml" command="load" subst_value="true"/>
         <param name="robot_ip" value="$(arg robot_ip)"/>
         <param name="ur_joint_state_topic_name" value="$(arg ur_joint_state_topic_name)"/>

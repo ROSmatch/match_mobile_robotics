@@ -12,7 +12,7 @@
     <arg name="left_arm_group_name" default="UR10_l"/>
     <arg name="right_arm_group_name" default="UR10_r"/>
     <arg name="use_lift" default="true"/>
-    <arg name="external_localization" default="false"/>
+    <arg name="external_localization" default="false"/>  <!-- if true, the tf_tree is no longer published by the mir but by the external localization publisher -->
     <arg name="kinematic_config_l" default="$(find ur_launch_hardware)/calibration/calibration_UR10_18.yaml"/>
     <arg name="kinematic_config_r" default="$(find ur_launch_hardware)/calibration/calibration_UR10_12.yaml"/>
     <arg name="ur_l_xyz" default="0.0 0.0 0.0"/>
@@ -20,7 +20,7 @@
     <arg name="ur_r_xyz" default="0.0 0.0 0.0"/>
     <arg name="ur_r_rpy" default="0.0 0.0 3.141596"/>
     <arg name="cmplt_robot_descr" default="$(find mur_description)/urdf/mur_620.gazebo.xacro use_lift:=$(arg use_lift) sim:=false ur_l_rpy:='$(arg ur_l_rpy)' ur_r_rpy:='$(arg ur_r_rpy)' ur_l_xyz:='$(arg ur_l_xyz)' ur_r_xyz:='$(arg ur_r_xyz)'" /> <!-- Complete robot description -->
-    <arg name="localization_type" default="mocap" />
+    <arg name="localization_type" default="mocap" /> <!-- mocap or amcl or robot_pose or odom-->
    
     <!-- Bringup the base of the mur -->
 
@@ -58,12 +58,17 @@
     <!-- Bringup the left UR -->
     <group if="$(eval arg('launch_ur_l') ==true)"> 
         <remap from="/$(arg tf_prefix)/$(arg left_arm_group_name)/joint_states" to="/$(arg tf_prefix)/joint_states"/>
+        <remap from="twist_controller/command" to="twist_controller/controller_input"/>
 
         <group ns= "$(arg tf_prefix)/$(arg left_arm_group_name)">
             <!-- use defined overall mur-description: -->
             <!-- <remap from="robot_description" to="/$(arg tf_prefix)/robot_description"/>  -->
             
             <param name="robot_state_publisher/tf_prefix" value="$(arg tf_prefix)"/>   <!-- Fixing missing tf_prefix forwarding to the ur packages -->
+            <!-- kill robot_state_publisher to prevent the robot_state_publisher from running twice -->
+            <include file="$(find ur_launch_hardware)/launch/kill_robot_state_publisher.launch">
+                <arg name="node_prefix" value="$(arg tf_prefix)/$(arg left_arm_group_name)"/>
+            </include>
 
             <include file="$(find ur_launch_hardware)/launch/dual_ur.launch">
                 <arg name="ur_version" value="ur10e"/>
@@ -81,8 +86,8 @@
                 <arg name="use_state_publisher" value="$(eval not arg('launch_mir'))"/> <!-- robot_state_pub is run by mir -->
             </include>
 
-            <node name="$(arg left_arm_group_name)_enable" pkg="ur_utilities" type="UR_enable.py" output="screen" respawn="false">
-                <param name="set_mode_topic" value="/$(arg tf_prefix)/$(arg left_arm_group_name)/ur_hardware_interface/set_mode" />
+            <node name="$(arg left_arm_group_name)_enable" pkg="ur_utilities" type="UR_enable.py" output="screen" respawn="false" >
+                <param name="ur_hardware_interface_topic" value="/$(arg tf_prefix)/$(arg left_arm_group_name)/ur_hardware_interface" />
             </node>
 
             <!-- Lift module -->
@@ -100,6 +105,12 @@
                 </node> -->
             </group>
 
+            <!-- global pose publisher -->
+            <node name="global_tcp_pose_publisher" pkg="mur_control" type="global_tcp_pose_publisher.py" output="screen" respawn="true" >
+                <param name="UR_base_link_name" value="$(arg tf_prefix)/$(arg left_arm_group_name)/base_link_inertia" />
+                <param name="local_TCP_pose_topic" value="ur_calibrated_pose" />
+            </node>
+
 
         </group>
     </group>
@@ -109,10 +120,14 @@
     <group if="$(eval arg('launch_ur_r') ==true)">
 
         <remap from="/$(arg tf_prefix)/$(arg right_arm_group_name)/joint_states" to="/$(arg tf_prefix)/joint_states"/>
-
+        <remap from="twist_controller/command" to="twist_controller/controller_input"/>
+        
         <group ns= "$(arg tf_prefix)/$(arg right_arm_group_name)"> 
             <param name="robot_state_publisher/tf_prefix" value="$(arg tf_prefix)/$(arg right_arm_group_name)"/>  
-
+            <!-- kill robot_state_publisher to prevent the robot_state_publisher from running twice -->
+            <include file="$(find ur_launch_hardware)/launch/kill_robot_state_publisher.launch">
+                <arg name="node_prefix" value="$(arg tf_prefix)/$(arg right_arm_group_name)"/>
+            </include>
 
             <include file="$(find ur_launch_hardware)/launch/dual_ur.launch">
                 <arg name="ur_version" value="ur10e"/>
@@ -128,7 +143,13 @@
 
 
             <node name="$(arg right_arm_group_name)_enable" pkg="ur_utilities" type="UR_enable.py" output="screen" respawn="false" >
-                <param name="set_mode_topic" value="/$(arg tf_prefix)/$(arg right_arm_group_name)/ur_hardware_interface/set_mode" />
+                <param name="ur_hardware_interface_topic" value="/$(arg tf_prefix)/$(arg right_arm_group_name)/ur_hardware_interface" />
+            </node>
+
+            <!-- global pose publisher -->
+            <node name="global_tcp_pose_publisher" pkg="mur_control" type="global_tcp_pose_publisher.py" output="screen" respawn="true" >
+                <param name="UR_base_link_name" value="$(arg tf_prefix)/$(arg right_arm_group_name)/base_link_inertia" />
+                <param name="local_TCP_pose_topic" value="ur_calibrated_pose" />
             </node>
 
              <!-- Lift module -->
@@ -151,6 +172,15 @@
     </group>
 
     <group ns="$(arg tf_prefix)">
+
+        <!-- if both arms are launched, turn on dual arm collision avoidance -->
+        <!-- <group if="$(eval arg('launch_ur_l') ==true and arg('launch_ur_r') ==true)">
+            <include file="$(find mur_control)/launch/dual_UR10_collision_avoidance.launch">
+                <arg name="tf_prefix" value="$(arg tf_prefix)"/>
+                <arg name="joint_states_topic" value="/$(arg tf_prefix)/joint_states"/>
+            </include>
+        </group> -->
+
         <arg name="prefix" value="UR10"/>
         
         <!-- arm_controllers have to be running -->

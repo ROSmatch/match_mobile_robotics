@@ -1,0 +1,69 @@
+name: Build and Launch Robot in Gazebo
+
+on:
+  push:
+    branches: [noetic-devel]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        rosdistro: [noetic]
+    runs-on: [self-hosted, macos]
+    container:
+      image: osrf/ros:noetic-desktop-full
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Install apt dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential clang-format-10 file git python3-catkin-lint \
+            python3-catkin-tools python3-pip python3-rosdep
+
+      - name: Install pip dependencies
+        run: pip install pre-commit
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          path: src  # Checkout directly into the src folder of the catkin workspace
+
+      - name: Install remaining dependencies
+        run: |
+          cd src/match_mobile_robotics
+          bash setup_github.sh
+          cd ../..
+          if [ ! -f /etc/ros/rosdep/sources.list.d/20-default.list ]; then
+            sudo rosdep init
+          fi
+          rosdep update
+          rosdep install --from-paths src -i -y --rosdistro ${{ matrix.rosdistro }}
+
+      - name: Build
+        run: |
+          source /opt/ros/${{ matrix.rosdistro }}/setup.sh
+          catkin init
+          catkin config -j 1 -p 1
+          catkin build --limit-status-rate 0.1 --no-notify
+          catkin build --limit-status-rate 0.1 --no-notify --make-args tests
+
+      - name: Source environment
+        run: |
+          source /opt/ros/${{ matrix.rosdistro }}/setup.sh
+          source devel/setup.sh
+
+      - name: Launch Gazebo with Robot
+        run: |
+          source /opt/ros/${{ matrix.rosdistro }}/setup.sh
+          source devel/setup.sh
+          roslaunch mir_examples single_mir_600.launch
+
+      - name: Run pre-commit hooks
+        run: |
+          cd src/match_mobile_robotics
+          pre-commit run -a
