@@ -26,7 +26,7 @@ local_planner_name = None
 
 def simple_goal_cb(msg):
     rospy.loginfo("Relaying simple goal to move_base_flex/exe_path action server")
-    mbf_mb_exe_path_ac.send_goal(mbf_msgs.ExePathGoal(path=msg, controller = "DWAPlannerROS"))
+    mbf_mb_exe_path_ac.send_goal(mbf_msgs.ExePathGoal(path=msg, controller = "TebLocalPlannerROS"))
     
     # get status of action server
     while not rospy.is_shutdown():
@@ -44,6 +44,6 @@ if __name__ == '__main__':
     mbf_mb_exe_path_ac.wait_for_server(rospy.Duration(20))
 
     # move_base simple topic and action server
-    mb_sg = rospy.Subscriber('move_path_simple/path', Path, simple_goal_cb)
+    mb_sg = rospy.Subscriber('/move_base_node/NavfnROS/plan' , Path, simple_goal_cb)
 
     rospy.spin()
