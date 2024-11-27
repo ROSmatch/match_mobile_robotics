@@ -1,0 +1,10 @@
+name: Check Licenses
+on: # this determines when this workflow is run
+  workflow_dispatch: # allow manually starting this workflow
+jobs:
+  check_licenses:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: boschresearch/ros_license_toolkit@1.2.3
