@@ -3,6 +3,7 @@
     <arg name="launch_mir" default="true"/>
     <arg name="launch_ur_l" default="true"/>
     <arg name="launch_ur_r" default="true"/>
+    <arg name="simulate_camera" default="false"/>
     <arg name="controllers_started" default="arm_controller joint_state_controller"/>
     <arg name="controllers_stopped" default="joint_group_vel_controller"/>  <!--Must not be empty-->
     <arg name="pose_filename" default="$(find mur_launch_hardware)/poses/my_poses.yaml"/>
@@ -12,6 +13,7 @@
     <arg name="left_arm_group_name" default="UR10_l"/>
     <arg name="right_arm_group_name" default="UR10_r"/>
     <arg name="use_lift" default="true"/>
+    <arg name="tool" default="none"/>
     <arg name="external_localization" default="false"/>  <!-- if true, the tf_tree is no longer published by the mir but by the external localization publisher -->
     <arg name="kinematic_config_l" default="$(find ur_launch_hardware)/calibration/calibration_UR10_18.yaml"/>
     <arg name="kinematic_config_r" default="$(find ur_launch_hardware)/calibration/calibration_UR10_12.yaml"/>
@@ -19,7 +21,7 @@
     <arg name="ur_l_rpy" default="0.0 0.0 0.0"/>
     <arg name="ur_r_xyz" default="0.0 0.0 0.0"/>
     <arg name="ur_r_rpy" default="0.0 0.0 3.141596"/>
-    <arg name="cmplt_robot_descr" default="$(find mur_description)/urdf/mur_620.gazebo.xacro use_lift:=$(arg use_lift) sim:=false ur_l_rpy:='$(arg ur_l_rpy)' ur_r_rpy:='$(arg ur_r_rpy)' ur_l_xyz:='$(arg ur_l_xyz)' ur_r_xyz:='$(arg ur_r_xyz)'" /> <!-- Complete robot description -->
+    <arg name="cmplt_robot_descr" default="$(find mur_description)/urdf/mur_620.gazebo.xacro simulate_camera:= $(arg simulate_camera) use_lift:=$(arg use_lift) sim:=false tool:=$(arg tool) ur_l_rpy:='$(arg ur_l_rpy)' ur_r_rpy:='$(arg ur_r_rpy)' ur_l_xyz:='$(arg ur_l_xyz)' ur_r_xyz:='$(arg ur_r_xyz)'" /> <!-- Complete robot description -->
     <arg name="localization_type" default="mocap" /> <!-- mocap or amcl or robot_pose or odom-->
    
     <!-- Bringup the base of the mur -->

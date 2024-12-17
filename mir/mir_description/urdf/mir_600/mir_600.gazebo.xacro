@@ -8,7 +8,7 @@
 
 	<xacro:property name="imu_standard_deviation" value="0.00017" />
 
-	<xacro:macro name="mir_600_gazebo" params="tf_prefix robot_namespace">
+	<xacro:macro name="mir_600_gazebo" params="tf_prefix robot_namespace simulate_camera">
 
 		<!-- Predefine some values that are necessary later. It is important to differenciate between empty and not empty robot_namespace and tf_prefix -->
 		<xacro:if value="${robot_namespace == ''}">
@@ -57,8 +57,10 @@
 		<xacro:sick_s300_gazebo link="back_laser_link" robot_namespace="${robot_namespace_slashed}" topic="b_scan" tf_prefix="${tf_prefix_slashed}"/>
 
 		<!-- Settings for the camera of the robot to work in the simulation environment-->
-    	<xacro:gazebo_d435 camera_name="${robot_namespace_underscored}camera" reference_link="camera_link" topics_ns="${robot_namespace_slashed}camera" depth_optical_frame="${tf_prefix_slashed}camera_depth_optical_frame" color_optical_frame="${tf_prefix_slashed}camera_color_optical_frame" infrared1_optical_frame="${tf_prefix_slashed}camera_left_ir_optical_frame" infrared2_optical_frame="${tf_prefix_slashed}camera_right_ir_optical_frame" publish_pointcloud="true"/>
-
+    	<!-- check if "simulate_camera" is set to true -->
+		<xacro:if value="${simulate_camera}">
+			<xacro:gazebo_d435 camera_name="${robot_namespace_underscored}camera" reference_link="camera_link" topics_ns="${robot_namespace_slashed}camera" depth_optical_frame="${tf_prefix_slashed}camera_depth_optical_frame" color_optical_frame="${tf_prefix_slashed}camera_color_optical_frame" infrared1_optical_frame="${tf_prefix_slashed}camera_left_ir_optical_frame" infrared2_optical_frame="${tf_prefix_slashed}camera_right_ir_optical_frame" publish_pointcloud="true"/>
+		</xacro:if>
 
 		<!-- disabled, because it doesn't make a difference in Gazebo: -->
 		<!-- <xacro:set_all_wheel_frictions tf_prefix="${tf_prefix}"/> -->

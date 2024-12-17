@@ -4,7 +4,7 @@ import rospy
 from sensor_msgs.msg import JointState
 from math import sin, cos, pi
 import numpy as np
-from geometry_msgs.msg import Pose
+from geometry_msgs.msg import Pose, PoseStamped
 import tf
 
 class Direct_kinematics_publisher():
@@ -16,8 +16,8 @@ class Direct_kinematics_publisher():
         self.joint_names = ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint']
         self.DH_params = [[0,0,0.1807,pi/2],[0,-0.6127,0,0],[0,-0.57155,0,0],[0,0,0.17415,pi/2],[0,0,0.11985,-pi/2],[0,0,0.11655,0]]
         self.q = [0,0,0,0,0,0]
-        self.tcp_pose = Pose()
-        self.pose_pub = rospy.Publisher("tcp_pose", Pose, queue_size=10)
+        self.tcp_pose = PoseStamped()
+        self.pose_pub = rospy.Publisher("tcp_pose", PoseStamped, queue_size=10)
         rospy.Subscriber("joint_states", JointState, self.joint_state_callback)
         rospy.spin()
 
@@ -28,16 +28,18 @@ class Direct_kinematics_publisher():
                 if JointState.name[idx] == self.ur_prefix + self.joint_names[i]:
                     self.q[i] = JointState.position[idx]
         T = self.compute_direct_kinematics()
-        self.tcp_pose.position.x = -T[0][3] # x is pointing backwards
-        self.tcp_pose.position.y = -T[1][3] # y is pointing to the left
-        self.tcp_pose.position.z = T[2][3]
+        self.tcp_pose.pose.position.x = -T[0][3] # x is pointing backwards
+        self.tcp_pose.pose.position.y = -T[1][3] # y is pointing to the left
+        self.tcp_pose.pose.position.z = T[2][3]
         q = tf.transformations.quaternion_from_matrix(T)
         q_rot = tf.transformations.quaternion_from_euler(pi/2,pi,pi/2)
         q = tf.transformations.quaternion_multiply(q,q_rot)
-        self.tcp_pose.orientation.x = q[0]
-        self.tcp_pose.orientation.y = q[1]
-        self.tcp_pose.orientation.z = q[2]
-        self.tcp_pose.orientation.w = q[3]
+        self.tcp_pose.pose.orientation.x = q[0]
+        self.tcp_pose.pose.orientation.y = q[1]
+        self.tcp_pose.pose.orientation.z = q[2]
+        self.tcp_pose.pose.orientation.w = q[3]
+        self.tcp_pose.header.stamp = rospy.Time.now()
+        self.tcp_pose.header.frame_id = "base_link"
         self.pose_pub.publish(self.tcp_pose)
 
 

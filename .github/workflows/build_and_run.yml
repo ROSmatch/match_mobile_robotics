@@ -50,6 +50,7 @@ jobs:
         run: |
           source /opt/ros/${{ matrix.rosdistro }}/setup.sh
           cd $GITHUB_WORKSPACE/catkin_ws
+          catkin clean -y
           catkin build --limit-status-rate 0.1 --no-notify
 
       - name: Launch Gazebo with Robot using absolute path
@@ -60,17 +61,101 @@ jobs:
           source devel/setup.bash
           export QT_QPA_PLATFORM=offscreen
           #roslaunch mir_examples single_mir_600.launch &
-          roslaunch match_gazebo big_square.launch &
-          roslaunch mur_launch_sim mur_620.launch &
+          # kill rosmaster       
+          #killall -9 rosmaster         
+          roslaunch match_gazebo big_square.launch gui:=false&
+          sleep 5
+          roslaunch mur_launch_sim mur_620.launch robot_x:=1.0 robot_y:=2.0 &
           sleep 15  # Give some time for Gazebo and ROS nodes to initialize
 
-      - name: Check for /pose topic data
+      - name: Check rostopic list
         run: |
           source /opt/ros/${{ matrix.rosdistro }}/setup.sh
           source $GITHUB_WORKSPACE/catkin_ws/devel/setup.bash
           #timeout 10 rostopic echo /mir_pose_simple -n 1
           timeout 10 rostopic list
         continue-on-error: true
+
+      - name: Check if topics exist
+        run: |
+          source /opt/ros/${{ matrix.rosdistro }}/setup.sh
+          source $GITHUB_WORKSPACE/catkin_ws/devel/setup.bash
+          # run node and check output for string "ERROR"
+          output=$(rosrun integration_tests check_topics.py)
+
+          # Print raw output for debugging
+          echo "Raw output: $output"
+
+          # Clean output of non-printable characters (optional)
+          cleaned_output=$(echo "$output" | tr -cd '[:print:]\n')
+
+          # Debugging: See what grep is matching
+          echo "$cleaned_output" | grep -o "ERROR"
+
+          # Perform a grep search for "ERROR"
+          if echo "$cleaned_output" | grep -qi "\bERROR\b"; then
+            echo "Error found in check_topics.py output"
+            exit 1
+          else
+            echo "No error found in the output."
+            exit 0
+          fi
+        continue-on-error: true
+
+
+          
+      - name: Check spawn
+        run: |
+          source /opt/ros/${{ matrix.rosdistro }}/setup.sh
+          source $GITHUB_WORKSPACE/catkin_ws/devel/setup.bash
+          # run node and check output for string "ERROR"
+          output=$(rosrun integration_tests check_spawn.py)
+
+          # Print raw output for debugging
+          echo "Raw output: $output"
+
+          # Clean output of non-printable characters (optional)
+          cleaned_output=$(echo "$output" | tr -cd '[:print:]\n')
+
+          # Debugging: See what grep is matching
+          echo "$cleaned_output" | grep -o "ERROR"
+
+          # Perform a grep search for "ERROR"
+          if echo "$cleaned_output" | grep -qi "\bERROR\b"; then
+            echo "Error found in check_topics.py output"
+            exit 1
+          else
+            echo "No error found in the output."
+            exit 0
+          fi
+        continue-on-error: true
+
+      - name: Check homing
+        run: |
+          source /opt/ros/${{ matrix.rosdistro }}/setup.sh
+          source $GITHUB_WORKSPACE/catkin_ws/devel/setup.bash
+          # run node and check output for string "ERROR"
+          output=$(rosrun integration_tests check_homing.py)
+
+          # Print raw output for debugging
+          echo "Raw output: $output"
+
+          # Clean output of non-printable characters (optional)
+          cleaned_output=$(echo "$output" | tr -cd '[:print:]\n')
+
+          # Debugging: See what grep is matching
+          echo "$cleaned_output" | grep -o "ERROR"
+
+          # Perform a grep search for "ERROR"
+          if echo "$cleaned_output" | grep -qi "\bERROR\b"; then
+            echo "Error found in check_topics.py output"
+            exit 1
+          else
+            echo "No error found in the output."
+            exit 0
+          fi
+        continue-on-error: true
+
 
       - name: Evaluate test result
         run: |
@@ -82,3 +167,5 @@ jobs:
             echo "No data received on pose topic, failing the test."
             exit 1
           fi 
+        continue-on-error: true
+

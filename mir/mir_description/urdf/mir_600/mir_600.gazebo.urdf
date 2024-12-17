@@ -3,6 +3,7 @@
 
 	<xacro:arg name="robot_namespace" default=''/>
 	<xacro:arg name="tf_prefix" default=''/>
+	<xacro:arg name="simulate_camera" default='false'/>
 
 	<!-- MiR600 base -->
 	<xacro:include filename="$(find mir_description)/urdf/mir_600/mir_600.urdf.xacro" />
@@ -14,7 +15,7 @@
 	<!-- Init the MiR600 marco that is also used for the hardware -->
 	<xacro:mir_600/>
 	<!-- Init the MiR600 macro that includes all infos that Gazebo need to function -->
-	<xacro:mir_600_gazebo tf_prefix="$(arg tf_prefix)" robot_namespace="$(arg robot_namespace)"/>
+	<xacro:mir_600_gazebo tf_prefix="$(arg tf_prefix)" robot_namespace="$(arg robot_namespace)" simulate_camera="$(arg simulate_camera)"/>
 	<!-- Init the plugins that run the MiR in Gazebo -->
 	<xacro:controller_plugin_gazebo robot_namespace="$(arg robot_namespace)"/>
 	<xacro:p3d_base_controller robot_namespace="$(arg robot_namespace)"/>

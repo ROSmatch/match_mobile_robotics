@@ -1,0 +1,71 @@
+<launch>
+
+  <arg name="relative_pose_a_l"          default="[-0.721224685046586, -0.5474979578602941, -0.016944540722317047, 1.57079632679 , 0.0, 3.14159265359 ]" />
+  <arg name="relative_pose_a_r"          default="[-0.721224685046586, -1.4474979578602941, -0.016944540722317047, 1.57079632679 , 0.0, 3.14159265359 ]" />
+  <arg name="relative_pose_b_l"          default="[-0.721224685046586, 1.4474979578602941, -0.016944540722317047, 1.57079632679 , 0.0, 3.14159265359 ]" />
+  <arg name="relative_pose_b_r"          default="[-0.721224685046586, 0.5474979578602941, -0.016944540722317047, 1.57079632679 , 0.0, 3.14159265359 ]" />
+  <arg name="relative_pose_c_r"          default="[0.721224685046586, -0.5474979578602941, -0.016944540722317047, 1.57079632679 , 0.0, 0.0 ]" />
+  <arg name="relative_pose_c_l"          default="[0.721224685046586, -1.4474979578602941, -0.016944540722317047, 1.57079632679 , 0.0, 0.0]" />
+  <arg name="relative_pose_d_r"          default="[0.721224685046586, 1.4474979578602941, -0.016944540722317047, 1.57079632679 , 0.0, 0.0 ]" />
+  <arg name="relative_pose_d_l"          default="[0.721224685046586, 0.5474979578602941, -0.016944540722317047, 1.57079632679 , 0.0, 0.0 ]" />
+  
+  
+  <!-- <arg name="admittance" default="[0.0,0.0,0.001,0.0,0.0,0.0]" /> -->
+
+  <include file="$(find manipulator_control)/launch/dezentralized_admittance_controller_sim.launch">
+    <arg name="tf_prefix" value="mur620a" />
+    <arg name="UR_prefix" value="UR10_l" />
+    <arg name="external_localization" value="False" />
+    <arg name="relative_pose" value="$(arg relative_pose_a_l)" />
+  </include>
+
+  <include file="$(find manipulator_control)/launch/dezentralized_admittance_controller_sim.launch">
+    <arg name="tf_prefix" value="mur620a" />
+    <arg name="UR_prefix" value="UR10_r" />
+    <arg name="external_localization" value="False" />
+    <arg name="relative_pose" value="$(arg relative_pose_a_r)" />
+  </include>
+
+  <include file="$(find manipulator_control)/launch/dezentralized_admittance_controller_sim.launch">
+    <arg name="tf_prefix" value="mur620b" />
+    <arg name="UR_prefix" value="UR10_l" />
+    <arg name="external_localization" value="False" />
+    <arg name="relative_pose" value="$(arg relative_pose_b_l)" />
+  </include>
+
+  <include file="$(find manipulator_control)/launch/dezentralized_admittance_controller_sim.launch">
+    <arg name="tf_prefix" value="mur620b" />
+    <arg name="UR_prefix" value="UR10_r" />
+    <arg name="external_localization" value="False" />
+    <arg name="relative_pose" value="$(arg relative_pose_b_r)" />
+  </include>
+
+  <include file="$(find manipulator_control)/launch/dezentralized_admittance_controller_sim.launch">
+    <arg name="tf_prefix" value="mur620c" />
+    <arg name="UR_prefix" value="UR10_l" />
+    <arg name="external_localization" value="False" />
+    <arg name="relative_pose" value="$(arg relative_pose_c_l)" />
+  </include>
+
+  <include file="$(find manipulator_control)/launch/dezentralized_admittance_controller_sim.launch">
+    <arg name="tf_prefix" value="mur620c" />
+    <arg name="UR_prefix" value="UR10_r" />
+    <arg name="external_localization" value="False" />
+    <arg name="relative_pose" value="$(arg relative_pose_c_r)" />
+  </include>
+
+  <include file="$(find manipulator_control)/launch/dezentralized_admittance_controller_sim.launch">
+    <arg name="tf_prefix" value="mur620d" />
+    <arg name="UR_prefix" value="UR10_l" />
+    <arg name="external_localization" value="False" />
+    <arg name="relative_pose" value="$(arg relative_pose_d_l)" />
+  </include>
+
+  <include file="$(find manipulator_control)/launch/dezentralized_admittance_controller_sim.launch">
+    <arg name="tf_prefix" value="mur620d" />
+    <arg name="UR_prefix" value="UR10_r" />
+    <arg name="external_localization" value="False" />
+    <arg name="relative_pose" value="$(arg relative_pose_d_r)" />
+  </include>
+
+</launch>

@@ -27,8 +27,8 @@ class FakeLocalization():
         self.redundant_timestamp_index = 0
 
         # Read params
-        self.parent_frame = rospy.get_param('~parent_frame',"")
-        self.child_frame = rospy.get_param('~child_frame',"")
+        self.parent_frame = rospy.get_param('~parent_frame',"mur620a/odom") # parent frame is the odom frame
+        self.child_frame = rospy.get_param('~child_frame',"mur620a/base_footprint") # child frame is the base_footprint frame
 
         # Initialize Subscriber/Publisher/Services/Actions
         rospy.Subscriber('ground_truth', Odometry, self.__fake_localization_handler)

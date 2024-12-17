@@ -1,0 +1,56 @@
+<launch>
+    <!-- Basic launch file for one robot in the match_world_common map-->
+  
+    <!-- <include file="$(find match_gazebo)/launch/big_square.launch">
+    </include> -->
+  
+    <arg name="robot1_name"  default="mur620a"/>
+    <arg name="robot2_name"  default="mur620b"/>
+    <arg name="robot3_name"  default="mur620c"/>
+    <arg name="robot4_name"  default="mur620d"/>
+    <arg name="node_start_delay" default="5.0" doc="used to delay nodes that should not start right away"/>
+
+    
+    <!-- spawn robots   -->
+
+    <include file="$(find mur_launch_sim)/launch/mur_620.launch">
+        <arg name="robot_x"     default="-2.3" />
+        <arg name="robot_y"     default="-1.0" />
+        <arg name="robot_yaw"   default="0.0" /> 
+        <arg name="tf_prefix"   default="$(arg robot1_name)" />       
+    </include>
+
+      
+    <include file="$(find mur_launch_sim)/launch/mur_620.launch">
+        <arg name="robot_x"     default="-2.3" />
+        <arg name="robot_y"     default="1.0" />
+        <arg name="robot_yaw"   default="0.0" /> 
+        <arg name="tf_prefix"   default="$(arg robot2_name)" />       
+    </include> 
+    
+    <include file="$(find mur_launch_sim)/launch/mur_620.launch">
+        <arg name="robot_x"     default="2.3" />
+        <arg name="robot_y"     default="-1.0" />
+        <arg name="robot_yaw"   default="3.14159265359 " /> 
+        <arg name="tf_prefix"   default="$(arg robot3_name)" />       
+    </include>
+
+    <include file="$(find mur_launch_sim)/launch/mur_620.launch">
+        <arg name="robot_x"     default="2.3" />
+        <arg name="robot_y"     default="1.0" />
+        <arg name="robot_yaw"   default="3.14159265359 " /> 
+        <arg name="tf_prefix"   default="$(arg robot4_name)" />       
+    </include>
+    
+    <!-- launch virtual object -->
+    <include file="$(find virtual_object)/launch/virtual_object.launch" />
+
+    <!-- set initial pose -->
+    <node type="set_virtual_object_pose.py" name="set_virtual_object_pose" pkg="mur_examples" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' " /> 
+
+    <!-- move robots to initial position -->
+    <!-- <node name="move_all_URs_to_initial_pose" pkg="moveit_ros_visualization" type="moveit_run_path" args="$(find mur_examples)/path/move_all_URs_to_initial_pose.path" output="screen" /> -->
+
+    <node type="rviz" name="rviz_handling" pkg="rviz" args="-d $(find mur_examples)/rviz/multi_mur_handling.rviz" /> 
+
+  </launch>

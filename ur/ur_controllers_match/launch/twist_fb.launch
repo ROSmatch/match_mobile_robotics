@@ -1,0 +1,19 @@
+<launch>
+<arg name="group_name"    default="UR_arm_l" />
+<arg name="prefix_ur"    default="UR10_l/" />
+<arg name="ns"    default="mur620" />
+
+<group ns="mur620">
+<!-- Launch the twist_sim node -->
+    <node name="twist_sim" pkg="ur_controllers_match" type="twist_controller_fb" output="screen">
+        <!-- Custom parameters -->
+        <param name="prefix_ur" value="$(arg prefix_ur)" />
+        <param name="group_name" value="$(arg group_name)" />
+        
+        <!-- Topic remapping -->
+        <remap from="$(arg prefix_ur)joint_group_vel_controller/command" to="/mur620/joint_group_vel_controller_l/safe/command" />
+        <remap from="twist_command" to="UR10_l/twist_fb_command" />
+
+    </node>
+</group>
+</launch>
