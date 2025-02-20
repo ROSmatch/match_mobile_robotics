@@ -21,22 +21,8 @@
     <arg name="ur_l_rpy" default="0.0 0.0 0.0"/>
     <arg name="ur_r_xyz" default="0.0 0.0 0.0"/>
     <arg name="ur_r_rpy" default="0.0 0.0 3.141596"/>
-    <!-- <arg name="cmplt_robot_descr" default="$(find mur_description)/urdf/mur_620.gazebo.xacro simulate_camera:= $(arg simulate_camera) use_lift:=$(arg use_lift) sim:=false tool:='$(arg tool)' ur_l_rpy:='$(arg ur_l_rpy)' ur_r_rpy:='$(arg ur_r_rpy)' ur_l_xyz:='$(arg ur_l_xyz)' ur_r_xyz:='$(arg ur_r_xyz)'" /> Complete robot description -->
+    <arg name="cmplt_robot_descr" default="$(find mur_description)/urdf/mur_620.gazebo.xacro use_lift:=$(arg use_lift) tool:=$(arg tool) simulate_camera:=$(arg simulate_camera) sim:=false ur_l_rpy:='$(arg ur_l_rpy)' ur_r_rpy:='$(arg ur_r_rpy)' ur_l_xyz:='$(arg ur_l_xyz)' ur_r_xyz:='$(arg ur_r_xyz)'" /> <!-- Complete robot description -->
     <arg name="localization_type" default="mocap" /> <!-- mocap or amcl or robot_pose or odom-->
-    <!-- Define the path to the Xacro file -->
-    <arg name="cmplt_robot_descr" default="$(find mur_description)/urdf/mur_620.gazebo.xacro" />
-
-    <!-- Use the Xacro file in the param tag and pass parameters separately -->
-    <param name="robot_description" 
-        command="$(find xacro)/xacro --inorder $(arg cmplt_robot_descr) 
-                    simulate_camera:=$(arg simulate_camera)
-                    use_lift:=$(arg use_lift)
-                    sim:=false 
-                    tool:='$(arg tool)' 
-                    ur_l_rpy:='$(arg ur_l_rpy)' 
-                    ur_r_rpy:='$(arg ur_r_rpy)' 
-                    ur_l_xyz:='$(arg ur_l_xyz)' 
-                    ur_r_xyz:='$(arg ur_r_xyz)'"/>
 
     <!-- Bringup the base of the mur -->
 
