@@ -121,7 +121,7 @@
 		</group>
 
 		<!-- use feedback instead (ur_controllers_match twist_controller_fb )-->
-		<group if = "$(arg use_inverse_differential_kinematics)">
+		<!-- <group if = "$(arg use_inverse_differential_kinematics)">
 			<node name="twist_controller_sim_r" pkg="mur_control" type="twist_controller_sim.py" output="screen" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' " >
 				<param name="robot_name" value="$(arg mur_ns)" />
 				<param name="group_vel_controller_topic" value="joint_group_vel_controller_r/unsafe/command" />
@@ -135,7 +135,7 @@
 				<param name="commanded_twist_topic" value="$(arg prefix)_l/commanded_twist" />
 				<param name="move_group_name" value="UR_arm_l" />
 			</node>
-		</group>
+		</group> -->
 
 
 	
