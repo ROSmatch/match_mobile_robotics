@@ -40,8 +40,15 @@ class TotalPose:
         self.static_T = None
         if self.static_tf_included:
             tf_listener = TransformListener()
-            tf_listener.waitForTransform(static_tf_parent, static_tf_child, rospy.Time(0), rospy.Duration(5.0))
-            static_trans, static_rot = tf_listener.lookupTransform(static_tf_parent, static_tf_child, rospy.Time(0))
+
+            while not rospy.is_shutdown():
+                try:
+                    tf_listener.waitForTransform(static_tf_parent, static_tf_child, rospy.Time(0), rospy.Duration(5.0))
+                    static_trans, static_rot = tf_listener.lookupTransform(static_tf_parent, static_tf_child, rospy.Time(0))
+                    break
+                except Exception as e:
+                    rospy.logwarn(f"Could not get static transform: {e}. Retrying...")
+                    rospy.sleep(1.0)
             self.static_T = quaternion_matrix([static_rot[0], static_rot[1], static_rot[2], static_rot[3]])
             self.static_T[0:3, 3] = static_trans
 
