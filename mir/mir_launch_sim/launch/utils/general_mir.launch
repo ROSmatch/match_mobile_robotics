@@ -4,6 +4,7 @@
 	<arg name="robot_x"   default="0.0" />
 	<arg name="robot_y"   default="0.0" />
 	<arg name="robot_yaw" default="0.0" />  
+	<arg name="robot_z" default="0.0" />  
 	<arg name="model_name" default=""/>
     <arg name="robot_urdf_path" />
 
@@ -30,7 +31,7 @@
 
 	<!-- Spawn the robot into Gazebo -->
 	<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model $(arg robot_description_model_name)
-		-x $(arg robot_x) -y $(arg robot_y) -Y $(arg robot_yaw) " />
+		-x $(arg robot_x) -y $(arg robot_y) -z $(arg robot_z) -Y $(arg robot_yaw) " />
 
 	<!-- Start the controllers -->
 	<rosparam file="$(arg gazebo_joint_state_controller_config)" command="load" subst_value="true"/>
