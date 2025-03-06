@@ -3,9 +3,41 @@
 	<xacro:include filename="$(find mir_description)/urdf/general/common_properties.urdf.xacro" />
 
 	<xacro:macro name="actuated_wheel" params="locationprefix locationright">
+		<joint name="${locationprefix}_suspension_joint" type="prismatic">
+			<origin xyz="0.0 ${-mir_600_act_wheel_dy * locationright} -0.1" rpy="3.141592653589793 0 0"/> <!-- Position relative to base_link -->
+			<parent link="base_link"/>
+			<child link="${locationprefix}_suspension_link"/>
+			<axis xyz="0 0 1"/> <!-- Allow movement along z-axis -->
+			<limit lower="-0.2" upper="0.2" effort="1000.0" velocity="0.1"/> <!-- Adjust limits as needed -->
+			<!-- Optional: Add Gazebo-specific suspension properties -->
+			<gazebo>
+				<spring>
+				<stiffness>1000.0</stiffness> <!-- Spring stiffness -->
+				<damping>50.0</damping>       <!-- Damping coefficient -->
+				<reference_position>0.0</reference_position> <!-- Neutral position -->
+				</spring>
+			</gazebo>
+		</joint>
+		<link name="${locationprefix}_suspension_link">
+			<inertial>
+				<mass value="5.0"/> <!-- Adjust mass as needed -->
+				<origin xyz="0 0 0" rpy="0 0 0"/>
+				<inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/> <!-- Adjust inertia tensor -->
+			</inertial>
+			<visual>
+				<origin xyz="0 0 0" rpy="0 0 0"/>
+				<geometry>
+				<cylinder length="0.2" radius="0.02"/> <!-- Example geometry for suspension -->
+				</geometry>
+				<material name="aluminum">
+				<color rgba="0.5 0.5 0.5 1"/>
+				</material>
+			</visual>
+		</link>
+
 		<joint name="${locationprefix}_wheel_joint" type="continuous">
-			<origin xyz="0.0 ${-mir_600_act_wheel_dy * locationright} ${mir_600_act_wheel_radius}" rpy="0 0 0" />
-			<parent link="base_link" />
+			<origin xyz="0.0 0.0 ${mir_600_act_wheel_radius}" rpy="0 0 0" />
+			<parent link="${locationprefix}_suspension_link" />
 			<child link="${locationprefix}_wheel_link" />
 			<axis xyz="0 1 0" />
 			<limit effort="200" velocity="20.0" />
@@ -41,6 +73,40 @@
 			<dynamics damping="0.01" friction="0.0"/>
 		</joint>
 
+		<!-- Caster Suspensions -->
+		<joint name="${locationprefix}_caster_suspension_joint" type="prismatic">
+			<origin xyz="0.0 -0.0 -0.0" rpy="0 0 0"/> <!-- Position relative to base_link -->
+			<parent link="${locationprefix}_caster_rotation_link"/>
+			<child link="${locationprefix}_caster_suspension_link"/>
+			<axis xyz="0 0 -1"/> <!-- Allow movement along z-axis -->
+			<limit lower="-0.0" upper="0.2" effort="1000000.0" velocity="0.1"/> <!-- Adjust limits as needed -->
+			<!-- Optional: Add Gazebo-specific suspension properties -->
+			<gazebo>
+				<spring>
+				<stiffness>1000.0</stiffness> <!-- Spring stiffness -->
+				<damping>50.0</damping>       <!-- Damping coefficient -->
+				<reference_position>0.1</reference_position> <!-- Neutral position -->
+				</spring>
+			</gazebo>
+		</joint>
+
+		<link name="${locationprefix}_caster_suspension_link">
+			<inertial>
+				<mass value="5.0"/> <!-- Adjust mass as needed -->
+				<origin xyz="0 0 0" rpy="0 0 0"/>
+				<inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/> <!-- Adjust inertia tensor -->
+			</inertial>
+			<visual>
+				<origin xyz="0 0 0" rpy="0 0 0"/>
+				<geometry>
+				<cylinder length="0.2" radius="0.02"/> <!-- Example geometry for suspension -->
+				</geometry>
+				<material name="aluminum">
+				<color rgba="0.5 0.5 0.5 1"/>
+				</material>
+			</visual>
+		</link>
+
 		<link name="${locationprefix}_caster_rotation_link">
 		<inertial>
 			<!-- <origin xyz="0 0 -0.042500000044" rpy="${0.5 * pi} ${24 * deg_to_rad} ${1.5 * pi}" /> -->
@@ -72,7 +138,7 @@
 		<!-- caster wheel -->
 		<joint name="${locationprefix}_caster_wheel_joint" type="continuous">
 			<origin xyz="${mir_600_caster_wheel_dx} ${-mir_600_caster_wheel_dy * locationright} ${mir_600_caster_wheel_dz}" rpy="0 0 0" />
-			<parent link="${locationprefix}_caster_rotation_link" />
+			<parent link="${locationprefix}_caster_suspension_link" />
 			<child link="${locationprefix}_caster_wheel_link" />
 			<axis xyz="0 1 0" />
 		</joint>

@@ -13,7 +13,7 @@
 	<arg name="simulate_camera" default="false" doc="if camera should be simulated"/>
 	<arg name="tool" default="schunk_emh_rp_045"/>
 	<arg name="robot_urdf_path" value="$(find mur_description)/urdf/mur_620.gazebo.xacro use_lift:=$(arg lift) simulate_camera:=$(arg simulate_camera) tool:=$(arg tool)"/>
-	<arg name="gazebo_joint_state_controller_config" default="$(find mur_control)/config/gazebo_joint_state_controller.yaml" />
+	<arg name="gazebo_joint_state_controller_config" default="$(find mur_control)/config/gazebo_joint_state_controller_suspension.yaml" />
 	<arg name="prefix" value="UR10" doc="Prefix for the UR16 links"/>
 	<arg name="enable_dual_collison_avoidance" default="true" doc="if dual arm collision avoidance should be enabled"/>
 	<arg name="use_inverse_differential_kinematics" default="true" doc="if inverse differential kinematics should be used to emulate a twist interface"/>
